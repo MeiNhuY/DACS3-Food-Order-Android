@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1078777756729",
+    "project_id": "doancoso3-5a182",
+    "storage_bucket": "doancoso3-5a182.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1078777756729:android:43f6ab4b58f4b58ddce1e8",
+        "android_client_info": {
+          "package_name": "com.example.doancoso3"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbFgZEx0gjYgtoykmgbi2VcSEGZslG1AQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -40,7 +40,9 @@ class MainActivity : BaseActivity() {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-
+                item {
+                    TopBar()
+                }
             }
         }
     }

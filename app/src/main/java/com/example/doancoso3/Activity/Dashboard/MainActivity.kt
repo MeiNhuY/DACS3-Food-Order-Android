@@ -40,14 +40,8 @@ class MainActivity : BaseActivity() {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                // Ví dụ thêm 1 item để không lỗi
-                item {
-                    Text("Nội dung ở đây")
-                }
+
             }
         }
     }
 }
-
-//test
-//tessssss

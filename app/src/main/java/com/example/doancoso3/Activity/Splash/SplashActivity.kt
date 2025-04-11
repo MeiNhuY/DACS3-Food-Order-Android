@@ -37,85 +37,81 @@ class SplashActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            SplashScreen (onGetStartedClick = {
+            SplashScreen(onGetStartedClick = {
                 startActivity(Intent(this, MainActivity::class.java))
             })
         }
-
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_splash)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
     }
-}
 
-@Composable
-@Preview
-fun SplashScreen(onGetStartedClick: () -> Unit = {}) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(color = colorResource(R.color.darkBrown))) {
+    @Composable
+    @Preview
+    fun SplashScreen(onGetStartedClick: () -> Unit = {}) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = colorResource(R.color.darkBrown))
+        ) {
 
-        ConstraintLayout(modifier = Modifier.padding(top = 48.dp)) {
-            val(backgroundImg, logImg)=createRefs()
-            Image(
-                painter = painterResource(id= R.drawable.intro_pic),
-                contentDescription = null,
-                modifier = Modifier
-                    .constrainAs(backgroundImg){
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                    }
-                    .fillMaxWidth()
-            )
+            ConstraintLayout(modifier = Modifier.padding(top = 48.dp)) {
+                val (backgroundImg, logImg) = createRefs()
+                Image(
+                    painter = painterResource(id = R.drawable.intro_pic),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .constrainAs(backgroundImg) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                        }
+                        .fillMaxWidth()
+                )
 
-            Image(painter = painterResource(R.drawable.pizza),
-                contentDescription = null,
-                modifier = Modifier.run {
-                    constrainAs(logImg){
-                        top.linkTo(backgroundImg.top)
-                        bottom.linkTo(backgroundImg.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-                }, contentScale = ContentScale.Fit
-            )
-        }
-
-        val styledText= buildAnnotatedString {
-            append("Welcom to your ")
-            withStyle(style = SpanStyle(color = colorResource(R.color.orange))){
-                append("food\nparadis ")
+                Image(
+                    painter = painterResource(R.drawable.pizza),
+                    contentDescription = null,
+                    modifier = Modifier.run {
+                        constrainAs(logImg) {
+                            top.linkTo(backgroundImg.top)
+                            bottom.linkTo(backgroundImg.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                    }, contentScale = ContentScale.Fit
+                )
             }
-            append("expriance food perfection deliverred ")
+
+            val styledText = buildAnnotatedString {
+                append("Welcom to your ")
+                withStyle(style = SpanStyle(color = colorResource(R.color.orange))) {
+                    append("food\nparadis ")
+                }
+                append("expriance food perfection deliverred ")
+            }
+
+            Text(
+                text = styledText,
+                fontSize = 27.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                modifier = Modifier
+                    .padding(top = 32.dp)
+                    .padding(horizontal = 16.dp)
+
+            )
+
+            Text(
+                text = stringResource(R.string.splashSubtitle),
+                fontSize = 16.sp,
+                color = Color.White,
+                modifier = Modifier
+                    .padding(16.dp)
+            )
+
+            GetStartedButton(
+                onclick = onGetStartedClick,
+                modifier = Modifier
+                    .padding(top = 16.dp),
+            )
         }
-
-        Text(
-            text=styledText,
-            fontSize = 27.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier
-                .padding(top = 32.dp)
-                .padding(horizontal = 16.dp)
-
-        )
-
-        Text(
-            text = stringResource(R.string.splashSubtitle),
-            fontSize = 16.sp,
-            color = Color.White,
-            modifier = Modifier
-                .padding(16.dp)
-        )
-
-        GetStartedButton(onclick = onGetStartedClick,
-            modifier = Modifier
-                .padding(top = 16.dp),
-        )
     }
 }
 

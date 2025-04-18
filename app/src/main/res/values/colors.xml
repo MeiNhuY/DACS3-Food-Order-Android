@@ -10,7 +10,10 @@
     <color name="darkBrown">#1C0905</color>
     <color name="orange">#FC5835</color>
     <color name="Lightorange">#FF018786</color>
-    <color name="grey">#FF888888</color>
-    <color name="darkPurple">#FFFFFFFF</color>
+    <color name="darkPurple">#262424</color>
+    <color name="grey">#DEDCDC</color>
+    <color name="lightOrange">#FFF3E0</color> <!-- Màu nền -->
+
+
 
 </resources>

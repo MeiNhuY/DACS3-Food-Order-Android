@@ -52,7 +52,7 @@ private fun DetailScreen(
 var numberInCart by remember { mutableStateOf(item.numberInCart) }
     ConstraintLayout {
         val (footer,column)= createRefs()
-            Column  (
+            Column(
                 modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
@@ -78,19 +78,19 @@ var numberInCart by remember { mutableStateOf(item.numberInCart) }
                             numberInCart--
                             item.numberInCart=numberInCart
                         }
-
                     }
                 )
                 DescriptionSection(item.Description)
             }
-        FooterSection(onAddToCartClick,
+        FooterSection(
+            onAddToCartClick,
             totalPrice = (item.Price*numberInCart),
             Modifier.constrainAs(footer){
                 bottom.linkTo(parent.bottom)
                 end.linkTo(parent.end)
                 start.linkTo(parent.start)
             }
-            )
+        )
     }
 }
 

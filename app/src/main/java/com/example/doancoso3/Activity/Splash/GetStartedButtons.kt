@@ -20,7 +20,12 @@ import com.example.doancoso3.R
 
 @Composable
 @Preview
-fun GetStartedButton(onclick: () -> Unit = {}, modifier: Modifier = Modifier) {
+fun GetStartedButton(
+    onSignUpClick: () -> Unit = {},
+    onGetStartedClick: () -> Unit = {},
+    modifier: Modifier = Modifier
+
+) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -28,7 +33,7 @@ fun GetStartedButton(onclick: () -> Unit = {}, modifier: Modifier = Modifier) {
     ) {
         // Button Sign Up
         Button(
-            onClick = onclick,
+            onClick = onSignUpClick,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
                 contentColor = Color.White // màu chữ trắng
@@ -48,7 +53,7 @@ fun GetStartedButton(onclick: () -> Unit = {}, modifier: Modifier = Modifier) {
 
         // Button Get Started
         Button(
-            onClick = {onclick()},
+            onClick = onGetStartedClick,
             colors = ButtonDefaults.buttonColors(
                 containerColor = colorResource(R.color.orange),
                 contentColor = Color.White

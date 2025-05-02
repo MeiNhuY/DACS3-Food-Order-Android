@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.activity.viewModels
 import com.example.doancoso3.Domain.CategoryModel
 
+
 class MainActivity : BaseActivity() {
     private val viewModel: MainViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +39,6 @@ class MainActivity : BaseActivity() {
             MainScreen()
         }
     }
-
     @Composable
     @Preview
     fun MainScreen() {

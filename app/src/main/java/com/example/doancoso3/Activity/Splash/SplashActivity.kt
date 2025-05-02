@@ -3,7 +3,6 @@ package com.example.doancoso3.Activity.Splash
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -25,27 +25,38 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.example.doancoso3.Activity.Dashboard.MainActivity
+import com.example.doancoso3.Activity.Splash.LoginActivity
 import com.example.doancoso3.R
-import androidx.compose.runtime.Composable as Composable
-
 
 class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            SplashScreen(onGetStartedClick = {
-                startActivity(Intent(this, MainActivity::class.java))
-            })
+            SplashScreen(
+                onGetStartedClick = {
+                    startActivity(Intent(this, MainActivity::class.java))
+                },
+                onSignUpClick = {
+                    startActivity(Intent(this, LoginActivity::class.java))
+                }
+            )
         }
+//        setContent {
+//            SplashScreen(onGetStartedClick = {
+//                startActivity(Intent(this, LoginActivity::class.java)) // <-- Đổi MainActivity thành LoginActivity
+//                finish() // <-- thêm dòng này nếu muốn splash đóng luôn, không quay lại được
+//            })
+//        }
     }
 
     @Composable
     @Preview
-    fun SplashScreen(onGetStartedClick: () -> Unit = {}) {
+    fun SplashScreen(
+        onGetStartedClick: () -> Unit = {},
+        onSignUpClick: () -> Unit = {}
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -68,23 +79,22 @@ class SplashActivity : BaseActivity() {
                 Image(
                     painter = painterResource(R.drawable.pizza),
                     contentDescription = null,
-                    modifier = Modifier.run {
-                        constrainAs(logImg) {
-                            top.linkTo(backgroundImg.top)
-                            bottom.linkTo(backgroundImg.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
-                    }, contentScale = ContentScale.Fit
+                    modifier = Modifier.constrainAs(logImg) {
+                        top.linkTo(backgroundImg.top)
+                        bottom.linkTo(backgroundImg.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    },
+                    contentScale = ContentScale.Fit
                 )
             }
 
             val styledText = buildAnnotatedString {
-                append("Welcom to your ")
+                append("Welcome to your ")
                 withStyle(style = SpanStyle(color = colorResource(R.color.orange))) {
-                    append("food\nparadis ")
+                    append("food\nparadise ")
                 }
-                append("expriance food perfection deliverred ")
+                append("experience food perfection delivered ")
             }
 
             Text(
@@ -95,7 +105,6 @@ class SplashActivity : BaseActivity() {
                 modifier = Modifier
                     .padding(top = 32.dp)
                     .padding(horizontal = 16.dp)
-
             )
 
             Text(
@@ -107,13 +116,10 @@ class SplashActivity : BaseActivity() {
             )
 
             GetStartedButton(
-                onclick = onGetStartedClick,
-                modifier = Modifier
-                    .padding(top = 16.dp),
+                onSignUpClick = onSignUpClick,
+                onGetStartedClick = onGetStartedClick
             )
+
         }
     }
 }
-
-
-

@@ -17,5 +17,4 @@ data class FoodModel(
     var Title: String="",
     var Calorie: Int=0,
     var numberInCart: Int=0
-
 ): Serializable

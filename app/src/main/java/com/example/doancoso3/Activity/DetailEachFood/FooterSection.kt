@@ -29,13 +29,14 @@ import com.example.doancoso3.R
 @Composable
 fun FooterSection(onAddToCartClick:()->Unit, totalPrice:Double,modifier: Modifier=Modifier){
     ConstraintLayout(
-        modifier=Modifier
+        modifier=modifier
             .height(75.dp)
             .fillMaxWidth()
             .background(color = colorResource(R.color.grey))
             .padding(horizontal = 16.dp)
     ) {
         val (oderBtn, price) = createRefs()
+
         Button(onClick = onAddToCartClick,
             shape = RoundedCornerShape(100.dp),
             colors = ButtonDefaults.buttonColors(

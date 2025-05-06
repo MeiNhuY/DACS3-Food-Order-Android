@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.doancoso3.Activity.Dashboard.MainActivity
-import com.example.doancoso3.Activity.Splash.LoginActivity
 import com.example.doancoso3.R
 
 class SplashActivity : BaseActivity() {
@@ -36,19 +35,17 @@ class SplashActivity : BaseActivity() {
         setContent {
             SplashScreen(
                 onGetStartedClick = {
-                    startActivity(Intent(this, MainActivity::class.java))
+                    startActivity(Intent(this, MainActivity::class.java).apply {
+                        putExtra("startDestination", "home")
+                    })
                 },
                 onSignUpClick = {
-                    startActivity(Intent(this, LoginActivity::class.java))
+                    startActivity(Intent(this, MainActivity::class.java).apply {
+                        putExtra("startDestination", "login")  // Trang đăng nhập
+                    })
                 }
             )
         }
-//        setContent {
-//            SplashScreen(onGetStartedClick = {
-//                startActivity(Intent(this, LoginActivity::class.java)) // <-- Đổi MainActivity thành LoginActivity
-//                finish() // <-- thêm dòng này nếu muốn splash đóng luôn, không quay lại được
-//            })
-//        }
     }
 
     @Composable

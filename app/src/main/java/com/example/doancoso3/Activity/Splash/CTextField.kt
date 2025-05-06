@@ -17,21 +17,21 @@ import com.example.doancoso3.ui.theme.AlegreyaFontFamily
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CTextField(
-    onValueChanged: (String )->Unit={},
+    onValueChanged: (String) -> Unit = {},
     hint: String,
     value: String,
     modifier: Modifier = Modifier
-){
+) {
     TextField(
         value = value,
         onValueChange = onValueChanged,
         placeholder = {
             Text(
-                text =hint,
+                text = hint,
                 style = TextStyle(
                     fontSize = 22.sp,
-                    fontFamily= AlegreyaFontFamily,
-                    color = Color(0xFFBEC2C2)
+                    fontFamily = AlegreyaFontFamily,
+                    color = Color(0xFFBEC2C2) // Placeholder giữ nguyên xám
                 )
             )
         },
@@ -40,8 +40,11 @@ fun CTextField(
             .padding(bottom = 8.dp),
         colors = TextFieldDefaults.textFieldColors(
             containerColor = Color.Transparent,
-            focusedIndicatorColor = Color(0xFFBEC2C2),
-            unfocusedIndicatorColor = Color(0xFFBEC2C2)
+            focusedIndicatorColor = Color.White,
+            unfocusedIndicatorColor = Color.White,
+            cursorColor = Color.White,
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White
         )
     )
 }

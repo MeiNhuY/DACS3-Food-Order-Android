@@ -1,5 +1,6 @@
 package com.example.doancoso3.Activity.Splash
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -30,17 +33,43 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.doancoso3.R
 import com.example.doancoso3.ui.theme.AlegreyaFontFamily
-import com.example.doancoso3.Helper.LoginHelper
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
+import com.example.doancoso3.Repository.AuthService
+import com.example.doancoso3.ViewModel.AuthState
+import com.example.doancoso3.ViewModel.MainViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit = {},
-    onLoginFailure: (String) -> Unit = {}
-) {
-    var Email by remember { mutableStateOf("") }
-    var Password by remember { mutableStateOf("") }
+    modifier: Modifier,
+    navController: NavController,
+    viewModel: MainViewModel,
+    authService : AuthService
+
+
+    ) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val authState = viewModel.authState.observeAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(authState.value){
+        when(authState.value){
+            is AuthState.Authenticated-> navController.navigate("home")
+            is AuthState.Error-> Toast.makeText(context,
+                (authState.value as AuthState.Error).message, Toast.LENGTH_SHORT)
+            else->Unit
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -126,15 +155,28 @@ fun LoginScreen(
 
 
         }
+        errorMessage?.let { error ->
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
+
         CTextField(
-            hint = "Email Address",
-            value = Email,
-            onValueChanged = { Email = it }
+            hint = "Email ",
+            value = email,
+            onValueChanged = { email = it
+                errorMessage = null
+            }
         )
         CTextField(
             hint = "Password",
-            value = Password,
-            onValueChanged = { Password = it }
+            value = password,
+            onValueChanged = { password = it
+                errorMessage = null
+            }
         )
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -144,34 +186,40 @@ fun LoginScreen(
                 .wrapContentHeight(), // <-- Chỉ chiếm đủ chiều cao của CButton
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CButton(text = "Sign In", onClick = {
-                if (Email.isNotEmpty() && Password.isNotEmpty()) {
+            CButton(text = "Đăng Nhập",
+                onClick = {
+                    coroutineScope.launch {
+                        // Kiểm tra cơ bản trước khi gọi API
+                        if (email.isBlank() || password.isBlank()) {
+                            errorMessage = "Please fill in both email and password"
+                            return@launch
+                        }
 
-                    // Gọi hàm đăng nhập Firebase từ FirebaseHelper
+                        isLoading = true
+                        val success = authService.login(email, password)
+                        isLoading = false
 
-                    LoginHelper.loginWithEmailAndPassword(
-                        Email,
-                        Password,
-                        onLoginSuccess,
-                        onLoginFailure
-                    )
-                } else {
-                    // Hiển thị thông báo nếu email hoặc mật khẩu trống
-                    onLoginFailure("Email or Password cannot be empty.")
+                        if (success) {
+                            navController.navigate("home") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        } else {
+                            errorMessage = "Invalid email or password"
+                            snackbarHostState.showSnackbar("Invalid email or password")
+                        }
+                    }
                 }
-
-            }
             )
         }
         Spacer(modifier = Modifier.height(16.dp)) // Thêm tí khoảng cách nếu muốn đẹp
 
-        DontHaveAccountRow(
-        )
+        DontHaveAccountRow(navController = navController)
+
     }
 }
 
 @Preview
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen()
+//LoginScreen()
 }

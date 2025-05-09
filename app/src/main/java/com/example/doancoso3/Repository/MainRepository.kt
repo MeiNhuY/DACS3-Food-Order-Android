@@ -77,4 +77,55 @@ class MainRepository {
         })
         return listData
     }
+
+    fun searchByName(queryText: String): LiveData<Pair<List<CategoryModel>, List<FoodModel>>> {
+        val resultLiveData = MutableLiveData<Pair<List<CategoryModel>, List<FoodModel>>>()
+
+        val categoriesRef = firebaseDatabase.getReference("Category")
+        val foodsRef = firebaseDatabase.getReference("Foods")
+
+        val categoriesResult = mutableListOf<CategoryModel>()
+        val foodsResult = mutableListOf<FoodModel>()
+
+        var categoryDone = false
+        var foodDone = false
+
+        categoriesRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (child in snapshot.children) {
+                    val item = child.getValue(CategoryModel::class.java)
+                    if (item != null && item.name.contains(queryText, ignoreCase = true)) {
+                        categoriesResult.add(item)
+                    }
+                }
+                categoryDone = true
+                if (foodDone) {
+                    resultLiveData.value = Pair(categoriesResult, foodsResult)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+
+        foodsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (child in snapshot.children) {
+                    val item = child.getValue(FoodModel::class.java)
+                    if (item != null && item.Title.contains(queryText, ignoreCase = true)) {
+                        foodsResult.add(item)
+                    }
+                }
+                foodDone = true
+                if (categoryDone) {
+                    resultLiveData.value = Pair(categoriesResult, foodsResult)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+
+        return resultLiveData
+    }
+
+
 }

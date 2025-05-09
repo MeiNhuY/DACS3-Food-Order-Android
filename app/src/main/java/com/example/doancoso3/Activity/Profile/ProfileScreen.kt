@@ -1,4 +1,4 @@
-package com.example.doancoso3.Activity.Splash
+package com.example.doancoso3.Activity.Profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,6 +13,8 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,10 +24,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.doancoso3.ViewModel.ProfileViewModel
 import com.example.doancoso3.R
+import com.example.doancoso3.ViewModel.MainViewModel
 
 @Composable
-fun ProfileSettingsScreen() {
+fun ProfileScreen(viewModel: ProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel() ) {
+    val user by viewModel.user.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -52,13 +58,13 @@ fun ProfileSettingsScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Profile Image with edit icon
+        // Avatar
         Box(
             contentAlignment = Alignment.BottomEnd,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground), // tạm dùng ảnh này để không lỗi preview
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "Profile",
                 modifier = Modifier
                     .size(100.dp)
@@ -85,20 +91,26 @@ fun ProfileSettingsScreen() {
 
         Spacer(modifier = Modifier.height(24.dp))
         Text("Personal Information", color = Color(0xFF6A6AD3), fontWeight = FontWeight.Bold)
-
         Spacer(modifier = Modifier.height(8.dp))
-        ProfileField(label = "Account Number", value = "3024982387")
-        ProfileField(label = "Username", value = "Aryan.Stirk2")
-        ProfileField(label = "Email", value = "aryan.stirk2nd@gmail.com")
-        ProfileField(label = "Mobile Phone", value = "+620932938232")
-        ProfileField(label = "Address", value = "Gotham Road 21...")
+
+        ProfileField(label = "Username", value = user.name)
+        ProfileField(label = "Email", value = user.email)
+        ProfileField(label = "Mobile Phone", value = user.phone)
+        ProfileField(label = "Address", value = user.address)
 
         Spacer(modifier = Modifier.height(24.dp))
         Text("Security", color = Color(0xFF6A6AD3), fontWeight = FontWeight.Bold)
-
         Spacer(modifier = Modifier.height(8.dp))
+
         SecurityItem(title = "Change Pin")
         SecurityItem(title = "Change Password")
+        Column {
+            androidx.compose.material3.TextButton(onClick = {
+                viewModel.signout()
+            }) {
+                androidx.compose.material3.Text(text = "Dang Xuat")
+            }
+        }
 
         Row(
             modifier = Modifier
@@ -120,9 +132,10 @@ fun ProfileSettingsScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
         Text("Other", color = Color(0xFF6A6AD3), fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(32.dp)) // để tránh bị cắt khi preview
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
+
 
 @Composable
 fun ProfileField(label: String, value: String) {
@@ -162,5 +175,5 @@ fun SecurityItem(title: String) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewProfileSettingsScreen() {
-    ProfileSettingsScreen()
+    ProfileScreen()
 }

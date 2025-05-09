@@ -21,6 +21,9 @@ class MainViewModel : ViewModel() {
     private val _authState = MutableLiveData<AuthState>()
     val authState: LiveData<AuthState> = _authState
 
+    // search
+    private val _searchResult = MutableLiveData<Pair<List<CategoryModel>, List<FoodModel>>>()
+    val searchResult: LiveData<Pair<List<CategoryModel>, List<FoodModel>>> = _searchResult
     init {
         checkAuthStatus()
     }
@@ -34,43 +37,43 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    // Đăng nhập
-    fun login(email: String, password: String) {
-        if (email.isEmpty() || password.isEmpty()) {
-            _authState.value = AuthState.Error("Email hoặc mật khẩu không được để trống")
-            return
-        }
-
-        _authState.value = AuthState.Loading
-
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                _authState.value = if (task.isSuccessful) {
-                    AuthState.Authenticated
-                } else {
-                    AuthState.Error(task.exception?.message ?: "Đăng nhập thất bại")
-                }
-            }
-    }
-
-    // Đăng ký
-    fun signup(email: String, password: String) {
-        if (email.isEmpty() || password.isEmpty()) {
-            _authState.value = AuthState.Error("Email hoặc mật khẩu không được để trống")
-            return
-        }
-
-        _authState.value = AuthState.Loading
-
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                _authState.value = if (task.isSuccessful) {
-                    AuthState.Authenticated
-                } else {
-                    AuthState.Error(task.exception?.message ?: "Đăng ký thất bại")
-                }
-            }
-    }
+//    // Đăng nhập
+//    fun login(email: String, password: String) {
+//        if (email.isEmpty() || password.isEmpty()) {
+//            _authState.value = AuthState.Error("Email hoặc mật khẩu không được để trống")
+//            return
+//        }
+//
+//        _authState.value = AuthState.Loading
+//
+//        auth.signInWithEmailAndPassword(email, password)
+//            .addOnCompleteListener { task ->
+//                _authState.value = if (task.isSuccessful) {
+//                    AuthState.Authenticated
+//                } else {
+//                    AuthState.Error(task.exception?.message ?: "Đăng nhập thất bại")
+//                }
+//            }
+//    }
+//
+//    // Đăng ký
+//    fun signup(email: String, password: String) {
+//        if (email.isEmpty() || password.isEmpty()) {
+//            _authState.value = AuthState.Error("Email hoặc mật khẩu không được để trống")
+//            return
+//        }
+//
+//        _authState.value = AuthState.Loading
+//
+//        auth.createUserWithEmailAndPassword(email, password)
+//            .addOnCompleteListener { task ->
+//                _authState.value = if (task.isSuccessful) {
+//                    AuthState.Authenticated
+//                } else {
+//                    AuthState.Error(task.exception?.message ?: "Đăng ký thất bại")
+//                }
+//            }
+//    }
 
     // Đăng xuất
     fun signout() {
@@ -92,12 +95,37 @@ class MainViewModel : ViewModel() {
     fun loadFiltered(id: String): LiveData<MutableList<FoodModel>> {
         return repository.loadFiltered(id)
     }
+
+
+    fun search(queryText: String) {
+        repository.searchByName(queryText).observeForever { result ->
+            _searchResult.value = result
+        }
+    }
+    private val _searchResults = MutableLiveData<List<Any>>() // List chứa cả CategoryModel và FoodModel
+    val searchResults: LiveData<List<Any>> = _searchResults
+
+    fun searchByName(query: String, foodList: List<FoodModel>, categoryList: List<CategoryModel>) {
+        val result = mutableListOf<Any>()
+
+        // Lọc theo tên món ăn
+        result.addAll(foodList.filter {
+            it.Title.contains(query, ignoreCase = true)
+        })
+
+        // Lọc theo tên danh mục
+        result.addAll(categoryList.filter {
+            it.name.contains(query, ignoreCase = true)
+        })
+
+        _searchResults.value = result
+    }
+
+
 }
 
 // Trạng thái xác thực
 sealed class AuthState {
-
-
     object Authenticated : AuthState()
     object Unauthenticated : AuthState()
     object Loading : AuthState()

@@ -196,17 +196,32 @@ fun LoginScreen(
                         }
 
                         isLoading = true
-                        val success = authService.login(email, password)
-                        isLoading = false
+                        authService.loginUser(email, password) { success, message, user ->
+                            isLoading = false
+                            if (success && user != null) {
+                                when (user.role) {
+                                    "admin" -> navController.navigate("admin_home") {
+                                        popUpTo("login") { inclusive = true }
+                                    }
+                                    "user" -> navController.navigate("home") {
+                                        popUpTo("login") { inclusive = true }
+                                    }
 
-                        if (success) {
-                            navController.navigate("home") {
-                                popUpTo("login") { inclusive = true }
+                                    else -> {
+                                        errorMessage = "Unknown role"
+                                        coroutineScope.launch {
+                                            snackbarHostState.showSnackbar("Unknown role")
+                                        }
+                                    }
+                                }
+                            } else {
+                                errorMessage = message ?: "Login failed"
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(errorMessage ?: "Login failed")
+                                }
                             }
-                        } else {
-                            errorMessage = "Invalid email or password"
-                            snackbarHostState.showSnackbar("Invalid email or password")
                         }
+
                     }
                 }
             )

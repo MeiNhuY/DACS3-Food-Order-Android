@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.rememberAsyncImagePainter
+import com.example.doancoso3.Activity.Favorite.FavoriteButton
 import com.example.doancoso3.Domain.FoodModel
 import com.example.doancoso3.R
 
@@ -27,85 +28,96 @@ import com.example.doancoso3.R
 fun HeaderSection(
     item: FoodModel,
     numberInCart: Int,
+    isFavorite: Boolean,
     onBackClick: () -> Unit,
     onIncrement: () -> Unit,
-    onDecrement: () -> Unit
+    onDecrement: () -> Unit,
+    onToggleFavorite: () -> Unit
 ) {
-ConstraintLayout(modifier = Modifier
-    .fillMaxWidth()
-    .height(570.dp)
-    .padding(bottom = 16.dp)
-
-) {
-    val(back,fav,mainImage, arcImg, title, detailRow, numberRow)=createRefs()
-
-    Image(painter = rememberAsyncImagePainter(model = item.ImagePath),
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
+    ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
-            .height(400.dp)
-            .clip(RoundedCornerShape(
-                bottomStart = 30.dp, bottomEnd = 3.dp
-            )
-            )
-            .constrainAs(mainImage){
+            .height(570.dp)
+            .padding(bottom = 16.dp)
+    ) {
+        val (back, fav, mainImage, arcImg, title, detailRow, numberRow) = createRefs()
+
+        Image(
+            painter = rememberAsyncImagePainter(model = item.ImagePath),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(400.dp)
+                .clip(RoundedCornerShape(bottomStart = 30.dp, bottomEnd = 3.dp))
+                .constrainAs(mainImage) {
+                    top.linkTo(parent.top)
+                    end.linkTo(parent.end)
+                    start.linkTo(parent.start)
+                }
+        )
+
+        Image(
+            painter = painterResource(R.drawable.arc_bg),
+            contentDescription = null,
+            modifier = Modifier
+                .height(190.dp)
+                .constrainAs(arcImg) {
+                    top.linkTo(mainImage.bottom, margin = (-64).dp)
+                    end.linkTo(parent.end)
+                    start.linkTo(parent.start)
+                }
+        )
+
+        BackButton(onBackClick, Modifier.constrainAs(back) {
+            top.linkTo(parent.top)
+            start.linkTo(parent.start)
+        })
+
+        FavoriteButton(
+            isFavorite = isFavorite,
+            onClick = onToggleFavorite,
+            modifier = Modifier.constrainAs(fav) {
                 top.linkTo(parent.top)
                 end.linkTo(parent.end)
-                start.linkTo(parent.start)
             }
         )
-    Image(
-        painter = painterResource(R.drawable.arc_bg),
-        contentDescription = null,
-        modifier = Modifier
-            .height(190.dp)
-            .constrainAs(arcImg){
-                top.linkTo(mainImage.bottom, margin = (-64).dp)
-                end.linkTo(parent.end)
-                start.linkTo(parent.start)
-            }
-    )
-    BackButton(onBackClick,Modifier.constrainAs(back){
-        top.linkTo(parent.top)
-        start.linkTo(parent.start)
-    })
-    FavoriteButton(Modifier.constrainAs(fav){
-        top.linkTo(parent.top)
-        end.linkTo(parent.end)
-    })
-    Text(
-        text=item.Title,
-        fontSize = 24.sp,
-        fontWeight = FontWeight.Bold,
-        color = colorResource(R.color.darkPurple),
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .constrainAs(title){
-                top.linkTo(arcImg.top, margin = 32.dp)
-                end.linkTo(parent.end)
-                start.linkTo(parent.start)
-            }
-    )
-        RowDetail(item,Modifier.constrainAs(detailRow){
+
+        Text(
+            text = item.Title,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = colorResource(R.color.darkPurple),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .constrainAs(title) {
+                    top.linkTo(arcImg.top, margin = 32.dp)
+                    end.linkTo(parent.end)
+                    start.linkTo(parent.start)
+                }
+        )
+
+        RowDetail(item, Modifier.constrainAs(detailRow) {
             top.linkTo(title.bottom)
             start.linkTo(parent.start)
             end.linkTo(parent.end)
         })
-    NumberRow(
-        item=item,
-        numberInCart=numberInCart,
-        onIncrement=onIncrement,
-        onDecrement=onDecrement,
-        Modifier.constrainAs(numberRow){
-            top.linkTo(detailRow.bottom)
-            bottom.linkTo(parent.bottom)
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-        }
-    )
+
+        NumberRow(
+            item = item,
+            numberInCart = numberInCart,
+            onIncrement = onIncrement,
+            onDecrement = onDecrement,
+            Modifier.constrainAs(numberRow) {
+                top.linkTo(detailRow.bottom)
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }
+        )
+    }
 }
-}
+
 @Composable
 private fun BackButton(onClick: () -> Unit,modifier: Modifier= Modifier){
     Image(
@@ -117,13 +129,4 @@ private fun BackButton(onClick: () -> Unit,modifier: Modifier= Modifier){
     )
 }
 
-@Composable
-private fun FavoriteButton(modifier: Modifier = Modifier){
-    Image(
-        painter = painterResource(R.drawable.fav_icon),
-        contentDescription = null,
-        modifier = modifier
-            .padding(end = 16.dp, top=48.dp)
 
-    )
-}

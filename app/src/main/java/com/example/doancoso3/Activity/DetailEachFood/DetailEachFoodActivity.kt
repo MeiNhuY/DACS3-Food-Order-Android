@@ -49,43 +49,51 @@ private fun DetailScreen(
     onBackClick: () -> Unit,
     onAddToCartClick: () -> Unit
 ) {
-var numberInCart by remember { mutableStateOf(item.numberInCart) }
+    var numberInCart by remember { mutableStateOf(item.numberInCart) }
+    var isFavorite by remember { mutableStateOf(false) } // trạng thái yêu thích
+
     ConstraintLayout {
-        val (footer,column)= createRefs()
-            Column(
-                modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .verticalScroll(rememberScrollState())
-                .constrainAs(column){
+        val (footer, column) = createRefs()
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .verticalScroll(rememberScrollState())
+                .constrainAs(column) {
                     top.linkTo(parent.top)
                     end.linkTo(parent.end)
                     start.linkTo(parent.start)
                 }
                 .padding(bottom = 80.dp)
-        ){
-                HeaderSection(
-                    item=item,
-                    numberInCart=numberInCart,
-                    onBackClick=onBackClick,
-                    onIncrement={
-                        numberInCart++
-                        item.numberInCart=numberInCart
-
-                    },
-                    onDecrement={
-                        if(numberInCart>1){
-                            numberInCart--
-                            item.numberInCart=numberInCart
-                        }
+        ) {
+            HeaderSection(
+                item = item,
+                numberInCart = numberInCart,
+                isFavorite = isFavorite,
+                onBackClick = onBackClick,
+                onIncrement = {
+                    numberInCart++
+                    item.numberInCart = numberInCart
+                },
+                onDecrement = {
+                    if (numberInCart > 1) {
+                        numberInCart--
+                        item.numberInCart = numberInCart
                     }
-                )
-                DescriptionSection(item.Description)
-            }
+                },
+                onToggleFavorite = {
+                    isFavorite = !isFavorite
+                    // Bạn có thể gọi Firebase để lưu trạng thái này nếu cần
+                }
+            )
+            DescriptionSection(item.Description)
+        }
+
         FooterSection(
             onAddToCartClick,
-            totalPrice = (item.Price*numberInCart),
-            Modifier.constrainAs(footer){
+            totalPrice = (item.Price * numberInCart),
+            Modifier.constrainAs(footer) {
                 bottom.linkTo(parent.bottom)
                 end.linkTo(parent.end)
                 start.linkTo(parent.start)

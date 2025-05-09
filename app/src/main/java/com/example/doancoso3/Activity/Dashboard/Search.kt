@@ -26,42 +26,46 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.doancoso3.R
 
-@Composable
-@Preview(showBackground = true)
-fun Search() {
-    var text by rememberSaveable { mutableStateOf("") }
+    @Composable
+    fun Search(
+        onSearchTextChanged: (String) -> Unit
+    ) {
+        var text by rememberSaveable { mutableStateOf("") }
 
-    TextField(
-        value = text,
-        onValueChange = { text = it },
-        label = {
-            Text(
-                text = "What would you like to eat?",
-                fontStyle = FontStyle.Italic,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.DarkGray
-            )
-        },
-        trailingIcon = {
-            Image(
-                painter = painterResource(id = R.drawable.search),
-                contentDescription = null,
-                modifier = Modifier.size(22.dp)
-            )
-        },
-        shape = RoundedCornerShape(12.dp),
-        colors= TextFieldDefaults.outlinedTextFieldColors(
-            backgroundColor = colorResource(R.color.grey),
-            focusedLabelColor = Color.Transparent,
-            unfocusedLabelColor = Color.Transparent,
-            textColor = Color.DarkGray,
-            unfocusedBorderColor = Color.Transparent
+        TextField(
+            value = text,
+            onValueChange = {
+                text = it
+                onSearchTextChanged(it)
+            },
+            label = {
+                Text(
+                    text = "What would you like to eat?",
+                    fontStyle = FontStyle.Italic,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.DarkGray
+                )
+            },
+            trailingIcon = {
+                Image(
+                    painter = painterResource(id = R.drawable.search),
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp)
+                )
+            },
+            shape = RoundedCornerShape(12.dp),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                backgroundColor = colorResource(R.color.grey),
+                focusedLabelColor = Color.Transparent,
+                unfocusedLabelColor = Color.Transparent,
+                textColor = Color.DarkGray,
+                unfocusedBorderColor = Color.Transparent
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .height(50.dp)
+                .background(colorResource(R.color.grey), CircleShape)
+        )
+    }
 
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .height(50.dp)
-            .background(colorResource(R.color.grey), CircleShape)
-    )
-}

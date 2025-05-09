@@ -23,16 +23,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.doancoso3.Activity.Splash.BaseActivity
 import com.example.doancoso3.R
 import com.uilover.project2142.Helper.ManagmentCart
 import java.util.ArrayList
 
+
+
 class CartActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent{
+
             CartScreen (ManagmentCart(this),
+
                 onBackClick = { finish() })
             }
         }
@@ -40,8 +46,11 @@ class CartActivity : BaseActivity() {
     }
 
 @Composable
-fun CartScreen(managmentCart: ManagmentCart= ManagmentCart(LocalContext.current),
-        onBackClick:()->Unit
+fun CartScreen(
+    managmentCart: ManagmentCart= ManagmentCart(LocalContext.current),
+
+    onBackClick:()->Unit
+
 ){
     val cartItem= remember { mutableStateOf(managmentCart.getListCart() )}
     val tax= remember { mutableStateOf(0.0) }

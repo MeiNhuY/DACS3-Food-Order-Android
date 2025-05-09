@@ -19,9 +19,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.doancoso3.Domain.BannerModel
 import com.example.doancoso3.Domain.CategoryModel
+import com.example.doancoso3.Domain.FoodModel
 import com.example.doancoso3.ViewModel.AuthState
 import com.example.doancoso3.ViewModel.MainViewModel
 
@@ -36,6 +38,10 @@ fun MainScreen(modifier: Modifier, navController: NavController, viewModel: Main
 
     val authState=viewModel.authState.observeAsState()
 
+
+    val foodList by viewModel.loadFiltered("...").observeAsState(emptyList()) // hoặc all foods
+    val categoryList by viewModel.loadCategory().observeAsState(emptyList())
+    val searchResults by viewModel.searchResults.observeAsState(emptyList())
     LaunchedEffect (authState.value){
         when(authState.value){
             is AuthState.Unauthenticated-> navController.navigate("login")
@@ -69,10 +75,28 @@ fun MainScreen(modifier: Modifier, navController: NavController, viewModel: Main
         ) {
             item { TopBar() }
             item { Banner(banners, showBannerLoading) }
-            item { Search() }
+            item {
+                Search { query ->
+                    viewModel.searchByName(query, foodList, categoryList)
+                }
+            }
+            item {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    if (searchResults.isNotEmpty()) {
+                        Text("🔍 Kết quả tìm kiếm:")
+
+                        searchResults.forEach { item ->
+                            when (item) {
+                                is CategoryModel -> Text("📁 Danh mục: ${item.name}")
+                                is FoodModel -> Text("🍔 Món ăn: ${item.Title}")
+                            }
+                        }
+                    }
+                }
+            }
             item { CategorySection(categories, showCategoryLoading) }
+            }
         }
-    }
     Column {
         TextButton(onClick = {
             viewModel.signout()

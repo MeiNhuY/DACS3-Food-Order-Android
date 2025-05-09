@@ -63,8 +63,8 @@ fun CategorySection(categories: SnapshotStateList<CategoryModel>, showCategoryLo
                                 .padding(horizontal = 8.dp),
                             onItemClick = {
                             val intent= Intent(context,ItemsListActivity::class.java).apply {
-                                putExtra("id", categoryModel.Id.toString())
-                                putExtra("title",categoryModel.Name)
+                                putExtra("id", categoryModel.id.toString())
+                                putExtra("title",categoryModel.name)
                             }
                                 startActivity(context, intent, null)
                             }
@@ -95,12 +95,12 @@ fun CategorySection(categories: SnapshotStateList<CategoryModel>, showCategoryLo
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 AsyncImage(
-                    model = category.ImagePath,
+                    model = category.imagePath,
                     contentDescription = null,
                     modifier=Modifier.size(80.dp)
                 )
                 Text(
-                    text = category.Name,
+                    text = category.name,
                     color = colorResource(R.color.darkPurple),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,

@@ -2,11 +2,18 @@ package com.example.doancoso3.Repository
 
 
 // Import các lớp cần thiết từ Firebase và Kotlin coroutine
+import android.content.Context
+import android.widget.Toast
+import com.example.doancoso3.Domain.OrderModel
 import com.example.doancoso3.Domain.UserModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.UUID
 
 // Lớp FirebaseService dùng để xử lý xác thực và lưu trữ người dùng
 open class AuthService {
@@ -14,15 +21,15 @@ open class AuthService {
     private val database = FirebaseDatabase.getInstance().getReference("Users") // Tham chiếu đến nhánh "users" trong Firebase Realtime Database
 
     // Hàm đăng ký người dùng (sử dụng coroutine)
-    suspend fun register(name: String, email: String, password: String): Boolean {
+    suspend fun register(name: String, email: String, password: String, phone: String, address: String, role: String ): Boolean {
         return try {
-            val result = auth.createUserWithEmailAndPassword(email, password).await() // Tạo tài khoản với email và password
-            val uid = result.user?.uid ?: return false // Lấy UID người dùng, nếu null thì trả false
-            val user = UserModel(uid, name, email) // Tạo đối tượng người dùng
-            database.child(uid).setValue(user).await() // Lưu vào Firebase Database
-            true // Trả về true nếu thành công
+            val result = auth.createUserWithEmailAndPassword(email, password).await()
+            val uid = result.user?.uid ?: return false
+            val user = UserModel(uid, name, email, phone, address, role)
+            database.child(uid).setValue(user).await()
+            true
         } catch (e: Exception) {
-            false // Trả về false nếu có lỗi
+            false
         }
     }
 
@@ -55,25 +62,26 @@ open class AuthService {
     }
 
     // Hàm đăng ký người dùng (sử dụng callback thay vì coroutine)
-    fun registerUser(email: String, password: String, name: String, onComplete: (Boolean, String?) -> Unit) {
-        auth.createUserWithEmailAndPassword(email, password) // Tạo tài khoản với email/password
+    fun registerUser(email: String, password: String, name: String, address: String, phone: String, onComplete: (Boolean, String?) -> Unit) {
+        auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val uid = auth.currentUser?.uid // Lấy UID người dùng
+                    val uid = auth.currentUser?.uid
                     if (uid == null) {
-                        onComplete(false, "Không lấy được UID") // Trả về lỗi nếu không có UID
+                        onComplete(false, "Không lấy được UID")
                         return@addOnCompleteListener
                     }
-                    val user = UserModel(uid, name, email) // Tạo đối tượng người dùng
-                    database.child(uid).setValue(user) // Lưu người dùng vào database
+                    val user = UserModel(uid, name, email, address, phone)
+                    database.child(uid).setValue(user)
                         .addOnCompleteListener { dbTask ->
-                            onComplete(dbTask.isSuccessful, dbTask.exception?.message) // Gọi callback với kết quả
+                            onComplete(dbTask.isSuccessful, dbTask.exception?.message)
                         }
                 } else {
-                    onComplete(false, task.exception?.message) // Trả lỗi nếu đăng ký thất bại
+                    onComplete(false, task.exception?.message)
                 }
             }
     }
+
 
     // Hàm đăng nhập người dùng (sử dụng callback)
     fun loginUser(email: String, password: String, onComplete: (Boolean, String?, UserModel?) -> Unit) {
@@ -109,6 +117,7 @@ open class AuthService {
                 onComplete(null) // Trả null nếu lỗi xảy ra
             }
     }
+
 
     // Hàm đăng xuất người dùng
     fun logout() {

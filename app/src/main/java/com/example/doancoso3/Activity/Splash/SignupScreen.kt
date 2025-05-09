@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,8 +16,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -61,7 +69,8 @@ fun SignupScreen(
     authService: AuthService
 ) {
 //    val context = LocalContext.current
-
+    var address by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
     val authState = viewModel.authState.observeAsState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -71,6 +80,9 @@ fun SignupScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
+    var expanded by remember { mutableStateOf(false) }
+    val roles= listOf("user", "admin", ) // Danh sách quyền
+    var selectedRole by remember { mutableStateOf("user") } // Quyền mặc định
 
     // Biểu thức chính quy để kiểm tra cú pháp email
     val emailPattern = Pattern.compile(
@@ -80,7 +92,6 @@ fun SignupScreen(
 
     LaunchedEffect(authState.value){
         when(authState.value){
-            is AuthState.Authenticated-> navController.navigate("home")
             is AuthState.Error-> Toast.makeText(context,
                 (authState.value as AuthState.Error).message, Toast.LENGTH_SHORT)
             else->Unit
@@ -183,8 +194,8 @@ fun SignupScreen(
                 name=it
                 errorMessage = null
             }
-
         )
+
         CTextField(
             hint = "Email",
             value = email,
@@ -195,6 +206,25 @@ fun SignupScreen(
         )
 
         CTextField(
+            hint = "Address",
+            value = address,
+            onValueChanged = {
+                address = it
+                errorMessage = null
+            }
+        )
+
+        CTextField(
+            hint = "Phone",
+            value = phone,
+            onValueChanged = {
+                phone = it
+                errorMessage = null
+            }
+        )
+
+
+        CTextField(
             hint = "Password",
             value = password,
             onValueChanged = {
@@ -202,6 +232,36 @@ fun SignupScreen(
                 errorMessage = null
             }
         )
+
+        Box(modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = selectedRole,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Select Role") },
+                trailingIcon = {
+                    IconButton(onClick = { expanded = !expanded }) {
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                roles.forEach { role ->
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedRole = role
+                            expanded = false
+                        },
+                        text = { Text(role) }
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -231,15 +291,18 @@ fun SignupScreen(
                         }
 
                         isLoading = true
-                        val success = authService.register(name, email, password)
+                        val success = authService.register(name, email, password, address, phone, selectedRole )
                         isLoading = false
 
                         if (success) {
+                            Toast.makeText(navController.context, "Registration successful! Please log in.", Toast.LENGTH_SHORT).show()
+
+                            // Điều hướng về màn hình đăng nhập
                             navController.navigate("login") {
                                 popUpTo("signup") { inclusive = true }
                             }
-                            Toast.makeText(navController.context, "Registration successful!", Toast.LENGTH_SHORT).show()
-                        } else {
+                        }
+                        else {
                             errorMessage = "Registration failed. Please try again."
                             snackbarHostState.showSnackbar("Registration failed. Please try again.")
                         }

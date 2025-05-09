@@ -67,13 +67,11 @@ fun SignupScreen(
     navController: NavController,
     viewModel: MainViewModel,
     authService: AuthService
-) {
-//    val context = LocalContext.current
-    var address by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
-    val authState = viewModel.authState.observeAsState()
+) { val authState = viewModel.authState.observeAsState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    var address by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -81,8 +79,8 @@ fun SignupScreen(
     var isLoading by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     var expanded by remember { mutableStateOf(false) }
-    val roles= listOf("user", "admin", ) // Danh sách quyền
-    var selectedRole by remember { mutableStateOf("user") } // Quyền mặc định
+    val roles = listOf("user", "admin") // Role list
+    var selectedRole by remember { mutableStateOf("user") } // Default role
 
     // Biểu thức chính quy để kiểm tra cú pháp email
     val emailPattern = Pattern.compile(
@@ -291,7 +289,7 @@ fun SignupScreen(
                         }
 
                         isLoading = true
-                        val success = authService.register(name, email, password, address, phone, selectedRole )
+                        val success = authService.register(name, email, password,  phone,address, selectedRole )
                         isLoading = false
 
                         if (success) {

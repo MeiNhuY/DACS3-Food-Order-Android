@@ -1,6 +1,7 @@
 package com.uilover.project2142.Helper
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import com.example.doancoso3.Domain.FoodModel
 import com.example.doancoso3.Helper.TinyDB
@@ -55,4 +56,11 @@ class ManagmentCart(val context: Context) {
         }
         return fee
     }
+
+
+    fun clearCart() {
+        tinyDB.remove("CartList")
+    }
+
+
 }

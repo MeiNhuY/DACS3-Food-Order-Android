@@ -26,7 +26,7 @@ import com.uilover.project2142.Helper.ManagmentCart
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeliveryInfoBox() {
+fun DeliveryInfoBox(onOrderPlaced: () -> Unit) {
 
     var name by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
@@ -154,6 +154,7 @@ fun DeliveryInfoBox() {
                     cartItems = latestCartItems,
                     totalPrice = latestTotalPrice,
                     onSuccess = {
+                        cartManager.clearCart() // ✅ Xoá giỏ hàng
                         Toast.makeText(context, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show()
                     },
                     onError = {

@@ -38,6 +38,8 @@
 <!--            android:exported="true" />-->
         <activity android:name=".Activity.Profile.ProfileActivity" />
         <activity android:name=".Activity.Order.OrderActivity" />
+        <activity android:name=".Activity.Order.OrderDetailActivity" />
+
 
         <activity
             android:name=".Activity.Dashboard.MainActivity"

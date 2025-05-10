@@ -1,10 +1,12 @@
 package com.example.doancoso3.Activity.Dashboard
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.Text
@@ -18,37 +20,44 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.doancoso3.Activity.DetailEachFood.DetailEachFoodActivity
 import com.example.doancoso3.Domain.BannerModel
 import com.example.doancoso3.Domain.CategoryModel
 import com.example.doancoso3.Domain.FoodModel
-import com.example.doancoso3.ViewModel.AuthState
 import com.example.doancoso3.ViewModel.MainViewModel
 
+
 @Composable
-fun MainScreen(modifier: Modifier, navController: NavController, viewModel: MainViewModel) {
+fun MainScreen(modifier: Modifier = Modifier, navController: NavController, viewModel: MainViewModel) {
     val scaffoldState = rememberScaffoldState()
+
     val banners = remember { mutableStateListOf<BannerModel>() }
     var showBannerLoading by remember { mutableStateOf(true) }
-
     val categories = remember { mutableStateListOf<CategoryModel>() }
     var showCategoryLoading by remember { mutableStateOf(true) }
 
-    val authState=viewModel.authState.observeAsState()
+    val authState = viewModel.authState.observeAsState()
 
-
-    val foodList by viewModel.loadFiltered("...").observeAsState(emptyList()) // hoặc all foods
-    val categoryList by viewModel.loadCategory().observeAsState(emptyList())
+    // Load filtered food list or all foods
+    val foodList by viewModel.loadFiltered("...").observeAsState(emptyList())
     val searchResults by viewModel.searchResults.observeAsState(emptyList())
-    LaunchedEffect (authState.value){
-        when(authState.value){
-            is AuthState.Unauthenticated-> navController.navigate("login")
+    val categoryList by viewModel.loadCategory().observeAsState(emptyList())
+
+    val context = LocalContext.current
+
+
+    // Authentication check
+    LaunchedEffect(authState.value) {
+        when(authState.value) {
+            is MainViewModel.AuthState.Unauthenticated -> navController.navigate("login")
             else -> Unit
         }
     }
 
+    // Load banners
     LaunchedEffect(Unit) {
         viewModel.loadBanner().observeForever {
             banners.clear()
@@ -56,6 +65,8 @@ fun MainScreen(modifier: Modifier, navController: NavController, viewModel: Main
             showBannerLoading = false
         }
     }
+
+    // Load categories
     LaunchedEffect(Unit) {
         viewModel.loadCategory().observeForever {
             categories.clear()
@@ -77,31 +88,31 @@ fun MainScreen(modifier: Modifier, navController: NavController, viewModel: Main
             item { Banner(banners, showBannerLoading) }
             item {
                 Search { query ->
-                    viewModel.searchByName(query, foodList, categoryList)
+                    viewModel.searchFoodByName(query)
                 }
             }
-            item {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    if (searchResults.isNotEmpty()) {
-                        Text("🔍 Kết quả tìm kiếm:")
-
-                        searchResults.forEach { item ->
-                            when (item) {
-                                is CategoryModel -> Text("📁 Danh mục: ${item.name}")
-                                is FoodModel -> Text("🍔 Món ăn: ${item.Title}")
-                            }
-                        }
+            if (searchResults.isNotEmpty()) {
+                item {
+                    Text("🔍 Kết quả tìm kiếm:", modifier = Modifier.padding(16.dp))
+                }
+                items(searchResults) { item ->
+                    SearchFoodCard(item = item) { clickedItem ->
+                        val intent = Intent(context, DetailEachFoodActivity::class.java)
+                        intent.putExtra("object", clickedItem)
+                        context.startActivity(intent)
                     }
                 }
             }
+
             item { CategorySection(categories, showCategoryLoading) }
-            }
         }
+    }
+
     Column {
         TextButton(onClick = {
             viewModel.signout()
         }) {
-            Text(text = "Dang Xuat")
+            Text(text = "Đăng Xuất")
         }
     }
 }

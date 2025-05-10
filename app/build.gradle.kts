@@ -58,6 +58,8 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.androidx.scenecore)
+    implementation(libs.firebase.crashlytics.buildtools)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -86,4 +88,8 @@ dependencies {
     //thu vien trươt cho banner
     implementation("androidx.compose.foundation:foundation:1.5.0")
     implementation("androidx.navigation:navigation-compose:2.7.7") // bản mới nhất navigation
+
+
+    // Firebase BOM (quản lý tất cả các dependencies Firebase)
+    implementation ("com.google.firebase:firebase-bom:32.0.0")
 }

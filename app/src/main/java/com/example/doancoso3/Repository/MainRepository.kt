@@ -5,7 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import com.example.doancoso3.Domain.BannerModel
 import com.example.doancoso3.Domain.CategoryModel
 import com.example.doancoso3.Domain.FoodModel
+import com.example.doancoso3.Domain.OrderModel
+import com.google.firebase.Firebase
 import com.google.firebase.database.*
+import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.tasks.await
 
 class MainRepository {
 
@@ -78,54 +82,75 @@ class MainRepository {
         return listData
     }
 
-    fun searchByName(queryText: String): LiveData<Pair<List<CategoryModel>, List<FoodModel>>> {
-        val resultLiveData = MutableLiveData<Pair<List<CategoryModel>, List<FoodModel>>>()
 
-        val categoriesRef = firebaseDatabase.getReference("Category")
-        val foodsRef = firebaseDatabase.getReference("Foods")
+    fun searchFoodByName(query: String): LiveData<MutableList<FoodModel>> {
+        val listData = MutableLiveData<MutableList<FoodModel>>()
+        val ref = firebaseDatabase.getReference("Foods")
 
-        val categoriesResult = mutableListOf<CategoryModel>()
-        val foodsResult = mutableListOf<FoodModel>()
-
-        var categoryDone = false
-        var foodDone = false
-
-        categoriesRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                for (child in snapshot.children) {
-                    val item = child.getValue(CategoryModel::class.java)
-                    if (item != null && item.name.contains(queryText, ignoreCase = true)) {
-                        categoriesResult.add(item)
+                val filteredList = mutableListOf<FoodModel>()
+                for (childSnapshot in snapshot.children) {
+                    val item = childSnapshot.getValue(FoodModel::class.java)
+                    if (item != null && item.Title.contains(query, ignoreCase = true)) {
+                        filteredList.add(item)
                     }
                 }
-                categoryDone = true
-                if (foodDone) {
-                    resultLiveData.value = Pair(categoriesResult, foodsResult)
-                }
+                listData.value = filteredList
             }
 
-            override fun onCancelled(error: DatabaseError) {}
-        })
-
-        foodsRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (child in snapshot.children) {
-                    val item = child.getValue(FoodModel::class.java)
-                    if (item != null && item.Title.contains(queryText, ignoreCase = true)) {
-                        foodsResult.add(item)
-                    }
-                }
-                foodDone = true
-                if (categoryDone) {
-                    resultLiveData.value = Pair(categoriesResult, foodsResult)
-                }
+            override fun onCancelled(error: DatabaseError) {
+                listData.value = mutableListOf() // Trả về list rỗng nếu lỗi
             }
-
-            override fun onCancelled(error: DatabaseError) {}
         })
 
-        return resultLiveData
+        return listData
     }
 
 
+    fun getDetailOrder(
+        orderId: String,
+        onResult: (OrderModel?, Map<String, FoodModel>) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val orderRef = firebaseDatabase.reference.child("Order").child(orderId)
+        val foodRef = firebaseDatabase.reference.child("Foods")
+
+        orderRef.get().addOnSuccessListener { snapshot ->
+            if (snapshot.exists()) {
+                val order = snapshot.getValue(OrderModel::class.java)
+                val foodIds = order?.items?.map { it.Id.toString() } ?: emptyList()
+
+                if (foodIds.isEmpty()) {
+                    onResult(order, emptyMap())
+                    return@addOnSuccessListener
+                }
+
+                val foodDetails = mutableMapOf<String, FoodModel>()
+                var count = 0
+
+                foodIds.forEach { foodId ->
+                    foodRef.child(foodId).get().addOnSuccessListener { foodSnap ->
+                        if (foodSnap.exists()) {
+                            val food = foodSnap.getValue(FoodModel::class.java)
+                            food?.let { foodDetails[foodId] = it }
+                        }
+                        count++
+                        if (count == foodIds.size) {
+                            onResult(order, foodDetails)
+                        }
+                    }.addOnFailureListener {
+                        count++
+                        if (count == foodIds.size) {
+                            onResult(order, foodDetails)
+                        }
+                    }
+                }
+            } else {
+                onError("Không tìm thấy đơn hàng")
+            }
+        }.addOnFailureListener {
+            onError("Lỗi: ${it.message}")
+        }
+    }
 }

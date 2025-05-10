@@ -47,6 +47,7 @@ fun ItemsList(items: List<FoodModel>){
 }
 
 @Composable
+
 fun Items(item: FoodModel, index: Int) {
     val context= LocalContext.current
     val isEvenRow= index % 2 == 0

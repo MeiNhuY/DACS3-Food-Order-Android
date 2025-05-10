@@ -14,7 +14,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.PointerIcon.Companion.Text
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -23,8 +22,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.doancoso3.Activity.Splash.BaseActivity
 import com.example.doancoso3.R
 import com.uilover.project2142.Helper.ManagmentCart
@@ -35,21 +32,23 @@ import java.util.ArrayList
 class CartActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent{
-
-            CartScreen (ManagmentCart(this),
-
-                onBackClick = { finish() })
-            }
+        setContent {
+            CartScreen(
+                managmentCart = ManagmentCart(this),
+                onBackClick = { finish() },
+                onOrderPlaced = { finish() } // ✅ truyền callback khi đặt hàng xong
+            )
         }
+
 
     }
 
 @Composable
 fun CartScreen(
-    managmentCart: ManagmentCart= ManagmentCart(LocalContext.current),
+    managmentCart: ManagmentCart = ManagmentCart(LocalContext.current),
 
-    onBackClick:()->Unit
+    onBackClick: () -> Unit,
+    onOrderPlaced: () -> Unit
 
 ){
     val cartItem= remember { mutableStateOf(managmentCart.getListCart() )}
@@ -133,8 +132,8 @@ fun CartScreen(
                         modifier = Modifier.padding(top = 16.dp)
                     )
                 }
-                item{
-                    DeliveryInfoBox()
+                item {
+                    DeliveryInfoBox(onOrderPlaced = onOrderPlaced)
                 }
             }
         }
@@ -144,4 +143,6 @@ fun CartScreen(
 fun calculatorCart(managmentCart: ManagmentCart, tax:MutableState<Double>){
     val percentTax=0.02
     tax.value= Math.round((managmentCart.getTotalFee() * percentTax) *100) / 100.0
+
+    }
 }

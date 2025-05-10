@@ -38,7 +38,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.example.doancoso3.Repository.AuthService
-import com.example.doancoso3.ViewModel.AuthState
 import com.example.doancoso3.ViewModel.MainViewModel
 import kotlinx.coroutines.launch
 
@@ -63,9 +62,9 @@ fun LoginScreen(
 
     LaunchedEffect(authState.value){
         when(authState.value){
-            is AuthState.Authenticated-> navController.navigate("home")
-            is AuthState.Error-> Toast.makeText(context,
-                (authState.value as AuthState.Error).message, Toast.LENGTH_SHORT)
+            is MainViewModel.AuthState.Authenticated-> navController.navigate("home")
+            is MainViewModel.AuthState.Error-> Toast.makeText(context,
+                (authState.value as MainViewModel.AuthState.Error).message, Toast.LENGTH_SHORT)
             else->Unit
         }
     }

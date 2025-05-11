@@ -16,6 +16,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.doancoso3.Activity.Cart.CartActivity
 import com.example.doancoso3.Activity.Order.OrderActivity
 import com.example.doancoso3.Activity.Order.OrderListScreen
@@ -25,8 +26,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
-@Preview
-fun MyBottomBar() {
+fun MyBottomBar(navController: NavController) {
     val bottomMenuItemsList= prepareBottomMenu()
     val context= LocalContext.current
     var selectedItem by remember{ mutableStateOf("Home") }
@@ -57,7 +57,9 @@ fun MyBottomBar() {
                                 Toast.makeText(context, "Bạn chưa đăng nhập!", Toast.LENGTH_SHORT).show()
                             }
                         }
-
+                        "Favorite" -> {
+                            navController.navigate("favorite")
+                        }
 
                         else -> {
                             Toast.makeText(context, bottomMenuItem.label, Toast.LENGTH_SHORT).show()

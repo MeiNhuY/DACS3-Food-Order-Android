@@ -77,7 +77,7 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavController, view
 
     Scaffold(
         scaffoldState = scaffoldState,
-        bottomBar = { MyBottomBar() }
+        bottomBar = { MyBottomBar(navController = navController) }
     ) { paddingValues: PaddingValues ->
         LazyColumn(
             modifier = Modifier

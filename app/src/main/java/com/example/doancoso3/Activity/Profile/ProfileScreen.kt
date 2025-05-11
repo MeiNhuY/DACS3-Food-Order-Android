@@ -12,9 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,12 +22,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.doancoso3.Domain.UserModel
 import com.example.doancoso3.ViewModel.ProfileViewModel
 import com.example.doancoso3.R
-import com.example.doancoso3.ViewModel.MainViewModel
+import androidx.compose.material.TextField
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 
 @Composable
-fun ProfileScreen(viewModel: ProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel() ) {
+fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     val user by viewModel.user.collectAsState()
 
     Column(
@@ -38,51 +40,58 @@ fun ProfileScreen(viewModel: ProfileViewModel = androidx.lifecycle.viewmodel.com
             .background(Color.White)
             .padding(16.dp)
     ) {
-        // Back button and title
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(Color(0xFF3A3EFF), shape = RoundedCornerShape(12.dp))
-                    .clickable { /* Handle back */ },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+        // Header
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            IconButton(onClick = {
+                navController.popBackStack() // 👉 Go back
+            }) {
+                Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color(0xFF3A3EFF),
+                    modifier = Modifier.size(24.dp)
+                )
             }
-            Spacer(modifier = Modifier.width(12.dp))
-            Text("Profile Settings", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Profile",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("Your Profile Information", fontSize = 16.sp, color = Color.Gray)
+        Spacer(modifier = Modifier.height(24.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Avatar
+        // Avatar with Edit Button
         Box(
             contentAlignment = Alignment.BottomEnd,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                contentDescription = "Profile",
+                contentDescription = "Avatar",
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(120.dp)
                     .clip(CircleShape)
-                    .border(2.dp, Color.LightGray, CircleShape)
+                    .border(3.dp, Color(0xFF3A3EFF), CircleShape)
             )
             Box(
                 modifier = Modifier
-                    .offset(x = (-4).dp, y = (-4).dp)
-                    .size(28.dp)
+                    .size(30.dp)
                     .clip(CircleShape)
                     .background(Color(0xFF3A3EFF))
-                    .padding(4.dp),
+                    .border(1.dp, Color.White, CircleShape)
+                    .clickable { /* Edit avatar */ },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit",
+                    Icons.Default.Edit,
+                    contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier.size(16.dp)
                 )
@@ -90,36 +99,35 @@ fun ProfileScreen(viewModel: ProfileViewModel = androidx.lifecycle.viewmodel.com
         }
 
         Spacer(modifier = Modifier.height(24.dp))
-        Text("Personal Information", color = Color(0xFF6A6AD3), fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(8.dp))
 
-        ProfileField(label = "Username", value = user.name)
-        ProfileField(label = "Email", value = user.email)
-        ProfileField(label = "Mobile Phone", value = user.phone)
-        ProfileField(label = "Address", value = user.address)
+        // Personal Info Section
+        Text("Personal Information", color = Color(0xFF6A6AD3), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+        Spacer(modifier = Modifier.height(12.dp))
+        ProfileFieldWithIcon(icon = R.drawable.person, label = "Username", value = user.name)
+        ProfileFieldWithIcon(icon = R.drawable.phone, label = "Email", value = user.email)
+        ProfileFieldWithIcon(icon = R.drawable.phone, label = "Mobile", value = user.phone)
+        ProfileFieldWithIcon(icon = R.drawable.phone, label = "Address", value = user.address)
 
         Spacer(modifier = Modifier.height(24.dp))
-        Text("Security", color = Color(0xFF6A6AD3), fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(8.dp))
 
-        SecurityItem(title = "Change Pin")
-        SecurityItem(title = "Change Password")
-        Column {
-            androidx.compose.material3.TextButton(onClick = {
-                viewModel.signout()
-            }) {
-                androidx.compose.material3.Text(text = "Dang Xuat")
-            }
-        }
+        // Security Section
+        Text("Security", color = Color(0xFF6A6AD3), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+        Spacer(modifier = Modifier.height(12.dp))
+        SecurityItem("Change PIN")
+        SecurityItem("Change Password")
 
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Fingerprint
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .background(Color(0xFFF5F5F5), RoundedCornerShape(12.dp))
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Finger Print", fontSize = 16.sp)
+            Text("Fingerprint Login", fontSize = 16.sp)
             Switch(
                 checked = true,
                 onCheckedChange = {},
@@ -129,13 +137,47 @@ fun ProfileScreen(viewModel: ProfileViewModel = androidx.lifecycle.viewmodel.com
                 )
             )
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("Other", color = Color(0xFF6A6AD3), fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(32.dp))
+        Button(
+            onClick = {
+                viewModel.signout() // 👉 Call ViewModel logout
+                navController.navigate("login") {
+                    popUpTo(0) // Clear back stack
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF3A3EFF)),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text("Logout", color = Color.White, fontSize = 16.sp)
+        }
     }
 }
 
+@Composable
+fun ProfileFieldWithIcon(icon: Int, label: String, value: String) {
+    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
+        Text(label, fontSize = 14.sp, color = Color.Gray)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFF1F1F1), RoundedCornerShape(12.dp))
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = null,
+                tint = Color.Gray,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(value, fontSize = 16.sp, color = Color.DarkGray)
+        }
+    }
+}
 
 @Composable
 fun ProfileField(label: String, value: String) {
@@ -144,14 +186,14 @@ fun ProfileField(label: String, value: String) {
             .fillMaxWidth()
             .padding(vertical = 4.dp)
     ) {
-        Text(text = label, fontSize = 14.sp, color = Color(0xFF6A6AD3))
+        Text(text = label, fontSize = 14.sp, color = Color(0xFF6A6AD3), fontWeight = FontWeight.Bold)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xFFF1F1F1), RoundedCornerShape(12.dp))
                 .padding(12.dp)
         ) {
-            Text(text = value, color = Color.Gray)
+            Text(text = value, color = Color.Gray, style = MaterialTheme.typography.body1)
         }
     }
 }
@@ -167,13 +209,12 @@ fun SecurityItem(title: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(title)
-        Icon(Icons.Default.KeyboardArrowRight, contentDescription = null)
+        Text(title, style = MaterialTheme.typography.body1)
+        Icon(
+            Icons.Default.KeyboardArrowRight,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp)
+        )
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun PreviewProfileSettingsScreen() {
-    ProfileScreen()
-}

@@ -54,5 +54,29 @@ class ProfileViewModel : ViewModel() {
         object Authenticated : AuthState()
         object Unauthenticated : AuthState()
     }
+    fun updateUserProfile(updatedUser: UserModel) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val ref = FirebaseDatabase.getInstance().getReference("Users").child(uid)
+
+        // Cập nhật thông tin người dùng trong Realtime Database
+        ref.setValue(updatedUser).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                _user.value = updatedUser // Cập nhật lại thông tin trong ViewModel
+            } else {
+                // Xử lý lỗi nếu có
+            }
+        }
+    }
+    fun updatePassword(newPassword: String) {
+        val user = FirebaseAuth.getInstance().currentUser
+        user?.updatePassword(newPassword)?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // Cập nhật mật khẩu thành công
+            } else {
+                // Xử lý lỗi khi cập nhật mật khẩu không thành công
+            }
+        }
+    }
+
 }
 

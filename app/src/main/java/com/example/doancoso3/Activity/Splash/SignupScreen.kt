@@ -80,7 +80,7 @@ fun SignupScreen(
     var isLoading by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     var expanded by remember { mutableStateOf(false) }
-    val roles = listOf("user", "admin")
+    val roles = listOf("user")
     var selectedRole by remember { mutableStateOf("user") }
 
     val emailPattern = Pattern.compile("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+")

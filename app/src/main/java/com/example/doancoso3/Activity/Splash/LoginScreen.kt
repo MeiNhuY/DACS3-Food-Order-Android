@@ -40,7 +40,9 @@ import androidx.navigation.NavController
 import com.example.doancoso3.Repository.AuthService
 import com.example.doancoso3.ViewModel.MainViewModel
 import kotlinx.coroutines.launch
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 
+import androidx.compose.ui.text.input.KeyboardType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -174,9 +176,11 @@ fun LoginScreen(
         CTextField(
             hint = "Password",
             value = password,
-            onValueChanged = { password = it
+            onValueChanged = {
+                password = it
                 errorMessage = null
-            }
+            },
+            visualTransformation = PasswordVisualTransformation()
         )
         Spacer(modifier = Modifier.height(24.dp))
 

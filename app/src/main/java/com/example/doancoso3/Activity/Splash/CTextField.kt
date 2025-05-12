@@ -14,13 +14,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.doancoso3.ui.theme.AlegreyaFontFamily
 
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation.Companion.None
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CTextField(
     onValueChanged: (String) -> Unit = {},
     hint: String,
     value: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    visualTransformation: VisualTransformation = None
 ) {
     TextField(
         value = value,
@@ -31,7 +35,7 @@ fun CTextField(
                 style = TextStyle(
                     fontSize = 22.sp,
                     fontFamily = AlegreyaFontFamily,
-                    color = Color(0xFFBEC2C2) // Placeholder giữ nguyên xám
+                    color = Color(0xFFBEC2C2)
                 )
             )
         },
@@ -45,6 +49,7 @@ fun CTextField(
             cursorColor = Color.White,
             focusedTextColor = Color.White,
             unfocusedTextColor = Color.White
-        )
+        ),
+        visualTransformation = visualTransformation
     )
 }

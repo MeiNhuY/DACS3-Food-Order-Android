@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,6 +27,7 @@ import androidx.navigation.NavController
 import com.example.doancoso3.R
 import com.example.doancoso3.Activity.Cart.CartActivity
 import com.example.doancoso3.Activity.Dashboard.Chat.ChatActivity
+import com.example.doancoso3.Activity.Notification.NotificationActivity
 import com.example.doancoso3.Activity.Order.OrderActivity
 import com.example.doancoso3.Activity.Profile.ProfileActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -97,7 +99,8 @@ fun TopBar(navController: NavController? = null) {
                             intent.putExtra("userId", userId)
                             context.startActivity(intent)
                         } else {
-                            Toast.makeText(context, "Bạn chưa đăng nhập!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Bạn chưa đăng nhập!", Toast.LENGTH_SHORT)
+                                .show()
                         }
                         expanded = false
                     },
@@ -122,6 +125,31 @@ fun TopBar(navController: NavController? = null) {
                         )
                     }
                 )
+                DropdownMenuItem(
+                    text = { Text("Đăng Xuất") },
+                    onClick = {
+                        FirebaseAuth.getInstance().signOut()
+                        Toast.makeText(context, "Đã đăng xuất", Toast.LENGTH_SHORT).show()
+
+                        // Điều hướng về màn hình đăng nhập và xóa toàn bộ back stack
+                        navController?.navigate("login") {
+                            popUpTo(0) { inclusive = true } // Xóa tất cả màn hình khỏi stack
+                            launchSingleTop = true // Không tạo thêm instance mới nếu đã có
+                        }
+
+                        expanded = false
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.logoutt),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                )
+
+
+
 
                 DropdownMenuItem(
                     text = { Text("ChatAI") },
@@ -160,7 +188,8 @@ fun TopBar(navController: NavController? = null) {
             Text(text = "Online Shop", color = Color.DarkGray, fontSize = 14.sp)
         }
 
-        // Notification icon
+        val context = LocalContext.current
+
         Image(
             painter = painterResource(R.drawable.bell_icon),
             contentDescription = null,
@@ -170,7 +199,10 @@ fun TopBar(navController: NavController? = null) {
                     bottom.linkTo(parent.bottom)
                     end.linkTo(parent.end)
                 }
-                .clickable { }
+                .clickable {
+                    context.startActivity(Intent(context, NotificationActivity::class.java))
+                }
         )
+
     }
 }

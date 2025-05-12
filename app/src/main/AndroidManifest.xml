@@ -25,7 +25,9 @@
         <activity
             android:name=".Activity.Splash.BaseActivity"
             android:exported="false" />
-
+        <activity
+            android:name=".Activity.Notification.NotificationActivity"
+            android:exported="false" />
         <activity
             android:name=".Activity.Splash.SplashActivity"
             android:exported="true">

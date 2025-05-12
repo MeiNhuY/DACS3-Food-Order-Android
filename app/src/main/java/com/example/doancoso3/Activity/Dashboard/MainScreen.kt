@@ -107,12 +107,4 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavController, view
             item { CategorySection(categories, showCategoryLoading) }
         }
     }
-
-    Column {
-        TextButton(onClick = {
-            viewModel.signout()
-        }) {
-            Text(text = "Đăng Xuất")
-        }
-    }
 }

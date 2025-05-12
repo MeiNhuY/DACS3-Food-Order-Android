@@ -25,6 +25,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.doancoso3.R
 import com.example.doancoso3.Activity.Cart.CartActivity
+import com.example.doancoso3.Activity.Dashboard.Chat.ChatActivity
 import com.example.doancoso3.Activity.Order.OrderActivity
 import com.example.doancoso3.Activity.Profile.ProfileActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -63,7 +64,7 @@ fun TopBar(navController: NavController? = null) {
                     text = { Text("Cart") },
                     onClick = {
                         context.startActivity(Intent(context, CartActivity::class.java))
-                        expanded = false
+//                        expanded = false
                     },
                     leadingIcon = {
                         Icon(
@@ -122,6 +123,20 @@ fun TopBar(navController: NavController? = null) {
                     }
                 )
 
+                DropdownMenuItem(
+                    text = { Text("ChatAI") },
+                    onClick = {
+                        context.startActivity(Intent(context, ChatActivity::class.java))
+                        expanded = false
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.chatgpt),
+                            contentDescription = null
+                        )
+                    }
+                )
+
             }
         }
 
@@ -136,7 +151,7 @@ fun TopBar(navController: NavController? = null) {
         ) {
             Text(
                 text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color.Red)) { append("EASY") }
+                    withStyle(style = SpanStyle(color = Color.Red)) { append("GOBBLE") }
                     withStyle(style = SpanStyle(color = Color.Black)) { append("FOOD") }
                 },
                 fontWeight = FontWeight.Bold,

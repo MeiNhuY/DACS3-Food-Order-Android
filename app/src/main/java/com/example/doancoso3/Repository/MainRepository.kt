@@ -6,6 +6,7 @@ import com.example.doancoso3.Domain.BannerModel
 import com.example.doancoso3.Domain.CategoryModel
 import com.example.doancoso3.Domain.FoodModel
 import com.example.doancoso3.Domain.OrderModel
+import com.example.doancoso3.Domain.ReviewModel
 import com.google.firebase.Firebase
 import com.google.firebase.database.*
 import com.google.firebase.firestore.firestore
@@ -153,4 +154,67 @@ class MainRepository {
             onError("Lỗi: ${it.message}")
         }
     }
+
+
+
+//ReView
+    fun getReview(
+        foodId: Int,  // Đổi kiểu thành Int
+        userId: String,
+        userName: String,
+        star: Float,
+        comment: String,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        val reviewRef = firebaseDatabase.getReference("Review").child(foodId.toString()) // Chuyển Int thành String
+        val newKey = reviewRef.push().key
+
+        if (newKey != null) {
+            val review = ReviewModel(
+                idReview = newKey.hashCode(),
+                foodId = foodId.toString(),  // Chuyển Int thành String khi lưu vào Firebase
+                userId = userId,
+                userName = userName,
+                Star = star.toDouble(),
+                comment = comment,
+                timestamp = System.currentTimeMillis()
+            )
+
+            reviewRef.child(newKey).setValue(review)
+                .addOnSuccessListener { onSuccess() }
+                .addOnFailureListener { onFailure(it.message ?: "Failed to submit review") }
+        } else {
+            onFailure("Unable to generate review ID")
+        }
+    }
+
+
+
+
+
+    fun loadReviews(foodId: Int): LiveData<List<ReviewModel>> {  // Đổi kiểu thành Int
+        val reviewData = MutableLiveData<List<ReviewModel>>()
+        val reviewRef = firebaseDatabase.getReference("Review").child(foodId.toString()) // Chuyển Int thành String
+
+        reviewRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val list = mutableListOf<ReviewModel>()
+                for (child in snapshot.children) {
+                    val item = child.getValue(ReviewModel::class.java)
+                    item?.let { list.add(it) }
+                }
+                // Sắp xếp theo thời gian mới nhất
+                reviewData.value = list.sortedByDescending { it.timestamp }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                reviewData.value = emptyList()
+            }
+        })
+
+        return reviewData
+    }
+
+
 }

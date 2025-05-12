@@ -43,7 +43,7 @@ fun OrderListScreen(userId: String, navController: NavController, viewModel: Ord
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                 }
             },
-            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color(0xFFFC8C00))
+            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color(0xFFFC5835))
         )
         if (viewModel.orders.isEmpty()) {
             Text("Bạn chưa có đơn hàng nào.", style = MaterialTheme.typography.bodyMedium)
@@ -74,7 +74,10 @@ fun OrderCard(order: OrderModel, onClick: () -> Unit) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Mã đơn: ${order.orderId}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-            Text("Tổng tiền: ${order.totalPrice}₫", style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFFFC8C00)))
+            Text("Tổng tiền: ${order.totalPrice}₫", style = MaterialTheme.typography.bodyMedium.copy(color = Color(
+                0xFFFC5835
+            )
+            ))
             Text("Trạng thái: ${order.status}", color = getStatusColor(order.status), style = MaterialTheme.typography.bodySmall)
             Text("Ngày đặt: ${formatTimestamp(order.timestamp)}", style = MaterialTheme.typography.bodySmall)
         }

@@ -49,7 +49,7 @@ fun FavoriteScreen(
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                 }
             },
-            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color(0xFFFC8C00))
+            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color(0xFFFC5835))
         )
         LazyColumn(modifier = Modifier.padding(16.dp)) {
             items(items) { item ->
@@ -76,7 +76,7 @@ fun FavoriteScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = onBackClick,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFC8C00)) // Màu cam đẹp
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFC5835)) // Màu cam đẹp
                     ) {
                         Text("Quay lại", color = Color.White)
                     }
@@ -135,7 +135,7 @@ fun FavoriteItemCard(food: FoodModel, onClick: () -> Unit, onDeleteClick: () -> 
 
             // Nút xoá
             IconButton(onClick = onDeleteClick) {
-                Icon(Icons.Default.Delete, contentDescription = "Xoá", tint = Color.Red)
+                Icon(Icons.Default.Delete, contentDescription = "Xoá", tint = Color.Black)
             }
         }
     }

@@ -27,7 +27,10 @@ import com.example.doancoso3.Domain.FoodModel
 import com.example.doancoso3.Domain.OrderModel
 import com.example.doancoso3.ViewModel.MainViewModel
 import com.google.firebase.database.FirebaseDatabase
-
+import android.content.Intent
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.platform.LocalContext
+import com.example.doancoso3.Activity.DetailEachFood.DetailEachFoodActivity
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,10 +116,17 @@ fun OrderDetailScreen(
                     order.items.forEach { item ->
                         val food = foodDetails[item.Id.toString()]
                         food?.let {
+                            val context = LocalContext.current // Lấy context ở đây
+
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 4.dp),
+                                    .padding(vertical = 4.dp)
+                                    .clickable {
+                                        val intent = Intent(context, DetailEachFoodActivity::class.java)
+                                        intent.putExtra("object", it) // Truyền nguyên FoodModel
+                                        context.startActivity(intent)
+                                    },
                                 colors = CardDefaults.cardColors(containerColor = Color(0xFFEFEFEF)),
                                 elevation = CardDefaults.cardElevation(2.dp)
                             ) {
@@ -145,6 +155,7 @@ fun OrderDetailScreen(
                             }
                         }
                     }
+
 
                     Divider(modifier = Modifier.padding(vertical = 16.dp))
                     Text("Total: ${order.totalPrice} đ", fontWeight = FontWeight.Bold, fontSize = 16.sp)

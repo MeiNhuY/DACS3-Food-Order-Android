@@ -14,7 +14,9 @@ import java.util.UUID
 class OrderViewModel : ViewModel() {
 
     fun placeOrder(
+
         recipientName: String,
+
         phone: String,
         address: String,
         paymentMethod: String,
@@ -28,6 +30,7 @@ class OrderViewModel : ViewModel() {
             onError("Người dùng chưa đăng nhập")
             return
         }
+
 
         val orderId = UUID.randomUUID().toString()
         val order = OrderModel(

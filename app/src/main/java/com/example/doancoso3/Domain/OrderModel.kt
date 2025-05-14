@@ -3,7 +3,7 @@ package com.example.doancoso3.Domain
 data class OrderModel(
     val orderId: String = "",
     val userId: String = "",
-    val userName: String = "",
+    var userName: String = "",
     val recipientName: String = "",
     val phone: String = "",
     val address: String = "",

@@ -71,6 +71,8 @@ fun DeliveryInfoBox(onOrderPlaced: () -> Unit) {
                 singleLine = true,
                 shape = RoundedCornerShape(8.dp)
             )
+
+
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -156,6 +158,8 @@ fun DeliveryInfoBox(onOrderPlaced: () -> Unit) {
                     onSuccess = {
                         cartManager.clearCart() // ✅ Xoá giỏ hàng
                         Toast.makeText(context, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show()
+                        onOrderPlaced()
+
                     },
                     onError = {
                         Toast.makeText(context, "Lỗi: $it", Toast.LENGTH_SHORT).show()

@@ -22,6 +22,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.doancoso3.Activity.Splash.BaseActivity
 import com.example.doancoso3.R
 import com.uilover.project2142.Helper.ManagmentCart
@@ -33,20 +35,28 @@ class CartActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val navController = rememberNavController()  // Tạo navController ở đây
+
             CartScreen(
                 managmentCart = ManagmentCart(this),
+                navController = navController,  // Truyền navController vào CartScreen
                 onBackClick = { finish() },
-                onOrderPlaced = { finish() } // ✅ truyền callback khi đặt hàng xong
+                onOrderPlaced = {
+                    // Khi đặt hàng thành công, chuyển về trang home
+                    navController.navigate("home") {
+                        popUpTo("cart") { inclusive = true }
+                    }
+                }
             )
         }
-
-
     }
+}
+
 
 @Composable
 fun CartScreen(
     managmentCart: ManagmentCart = ManagmentCart(LocalContext.current),
-
+    navController: NavHostController,
     onBackClick: () -> Unit,
     onOrderPlaced: () -> Unit
 
@@ -133,7 +143,11 @@ fun CartScreen(
                     )
                 }
                 item {
-                    DeliveryInfoBox(onOrderPlaced = onOrderPlaced)
+                    DeliveryInfoBox(onOrderPlaced = {
+                        navController.navigate("home") {
+                            popUpTo("cart") { inclusive = true }
+                        }
+                    })
                 }
             }
         }
@@ -145,4 +159,4 @@ fun calculatorCart(managmentCart: ManagmentCart, tax:MutableState<Double>){
     tax.value= Math.round((managmentCart.getTotalFee() * percentTax) *100) / 100.0
 
     }
-}
+

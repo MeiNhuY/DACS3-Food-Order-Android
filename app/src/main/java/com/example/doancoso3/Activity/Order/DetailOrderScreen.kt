@@ -201,7 +201,7 @@ fun InfoRow(icon: ImageVector, label: String, value: String) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = Color.Black // 👈 Bắt buộc set ở đây để override
+                tint = Color.Black
             )
         },
         enabled = false,
@@ -209,7 +209,7 @@ fun InfoRow(icon: ImageVector, label: String, value: String) {
         colors = OutlinedTextFieldDefaults.colors(
             disabledTextColor = Color.Black,
             disabledBorderColor = Color.LightGray,
-            disabledLeadingIconColor = Color.Black, // 👈 Sửa thành màu đen
+            disabledLeadingIconColor = Color.Black,
             disabledLabelColor = Color.Gray
         )
     )

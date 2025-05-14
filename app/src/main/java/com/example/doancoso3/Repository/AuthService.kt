@@ -4,32 +4,42 @@ import android.content.Context
 import com.example.doancoso3.Domain.UserModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
 
 open class AuthService {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance() // Lấy instance FirebaseAuth
     private val database = FirebaseDatabase.getInstance().getReference("Users") // Tham chiếu đến nhánh "users" trong Firebase Realtime Database
-
     // Hàm đăng ký người dùng (sử dụng coroutine)
-    suspend fun register(name: String, email: String, password: String, phone: String, address: String, role: String): Boolean {
+    suspend fun register(name: String, email: String, password: String, phone: String, address: String, role: String
+    ): Boolean {
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
-            val uid = result.user?.uid ?: return false
-            val user = UserModel(
+            val user = result.user ?: return false
+
+            // ✅ Cập nhật displayName
+            val profileUpdates = UserProfileChangeRequest.Builder()
+                .setDisplayName(name)
+                .build()
+            user.updateProfile(profileUpdates).await()
+
+            val uid = user.uid
+            val userModel = UserModel(
                 uid = uid,
                 email = email,
                 name = name,
-                phone = phone, // Số điện thoại đúng thứ tự
-                address = address, // Địa chỉ đúng thứ tự
+                phone = phone,
+                address = address,
                 role = role
             )
-            database.child(uid).setValue(user).await()
+            database.child(uid).setValue(userModel).await()
             true
         } catch (e: Exception) {
             false
         }
     }
+
 
     // Hàm đăng nhập người dùng (sử dụng coroutine)
     suspend fun login(email: String, password: String): Boolean {
@@ -63,34 +73,34 @@ open class AuthService {
             false // Trả về false nếu có lỗi
         }
     }
-
-    // Hàm đăng ký người dùng (sử dụng callback thay vì coroutine)
-    fun registerUser(name: String, email: String, password: String, phone: String, address: String, role: String, onComplete: (Boolean, String?) -> Unit) {
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val uid = auth.currentUser?.uid
-                    if (uid == null) {
-                        onComplete(false, "Không lấy được UID")
-                        return@addOnCompleteListener
-                    }
-                    val user = UserModel(
-                        uid = uid,
-                        email = email,
-                        name = name,
-                        phone = phone, // Đảm bảo đúng thứ tự
-                        address = address, // Đảm bảo đúng thứ tự
-                        role = role
-                    )
-                    database.child(uid).setValue(user)
-                        .addOnCompleteListener { dbTask ->
-                            onComplete(dbTask.isSuccessful, dbTask.exception?.message)
-                        }
-                } else {
-                    onComplete(false, task.exception?.message)
-                }
-            }
-    }
+//
+//    // Hàm đăng ký người dùng (sử dụng callback thay vì coroutine)
+//    fun registerUser(name: String, email: String, password: String, phone: String, address: String, role: String, onComplete: (Boolean, String?) -> Unit) {
+//        auth.createUserWithEmailAndPassword(email, password)
+//            .addOnCompleteListener { task ->
+//                if (task.isSuccessful) {
+//                    val uid = auth.currentUser?.uid
+//                    if (uid == null) {
+//                        onComplete(false, "Không lấy được UID")
+//                        return@addOnCompleteListener
+//                    }
+//                    val user = UserModel(
+//                        uid = uid,
+//                        email = email,
+//                        name = name,
+//                        phone = phone, // Đảm bảo đúng thứ tự
+//                        address = address, // Đảm bảo đúng thứ tự
+//                        role = role
+//                    )
+//                    database.child(uid).setValue(user)
+//                        .addOnCompleteListener { dbTask ->
+//                            onComplete(dbTask.isSuccessful, dbTask.exception?.message)
+//                        }
+//                } else {
+//                    onComplete(false, task.exception?.message)
+//                }
+//            }
+//    }
 
     // Hàm đăng nhập người dùng (sử dụng callback)
     fun loginUser(email: String, password: String, onComplete: (Boolean, String?, UserModel?) -> Unit) {

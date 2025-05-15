@@ -14,13 +14,15 @@ class ChatViewModel : ViewModel() {
     private val _aiResponse = MutableStateFlow("")
     val aiResponse: StateFlow<String> = _aiResponse
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://openrouter.ai/") // Nhớ có dấu "/" cuối
+        .baseUrl("https://openrouter.ai/api/") // Nhớ có dấu "/" cuối
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
     private val api = retrofit.create(OpenRouterApi::class.java)
-
 
     fun getSuggestions(
         ingredients: String,
@@ -30,11 +32,12 @@ class ChatViewModel : ViewModel() {
         diet: String
     ) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val prompt = """
                     Tôi có những nguyên liệu sau: $ingredients.
                     Hãy gợi ý cho tôi vài món ăn phù hợp với khẩu phần $portion, ẩm thực $cuisine, độ khó $level.
-                    Tôi muốn chế độ ăn: $diet. Trả lời bằng tiếng Việt, dạng danh sách.
+                    Tôi muốn chế độ ăn: $diet. Trả lời bằng tiếng Việt, dạng danh sách. Ít nhất là 5 món. 
                 """.trimIndent()
 
                 val request = ChatRequest(
@@ -47,15 +50,16 @@ class ChatViewModel : ViewModel() {
 
                 val response = api.getChatResponse(
                     request = request,
-                    token = "Bearer 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",
+                    token = "Bearer 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",
                     title = "GobbleFood"
                 )
-                Log.d("Response", response.toString()) // Kiểm tra dữ liệu trả về
-
+                Log.d("Response", response.toString())
 
                 _aiResponse.value = response.choices.firstOrNull()?.message?.content ?: "Không có gợi ý."
             } catch (e: Exception) {
                 _aiResponse.value = "Lỗi: ${e.localizedMessage}"
+            } finally {
+                _isLoading.value = false
             }
         }
     }

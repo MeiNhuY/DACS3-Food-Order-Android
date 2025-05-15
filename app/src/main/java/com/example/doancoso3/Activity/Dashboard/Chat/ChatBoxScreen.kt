@@ -11,9 +11,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -22,6 +25,7 @@ import androidx.compose.ui.unit.sp
 fun ChatBoxScreen() {
     val viewModel = remember { ChatViewModel() }
     val aiResponse by viewModel.aiResponse.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     val ingredients = remember { mutableStateOf("") }
     val diet = remember { mutableStateOf("") }
@@ -45,18 +49,31 @@ fun ChatBoxScreen() {
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp)
         ) {
-            Text(
-                text = "👩‍🍳 Gobble Chef",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFFFC5835)
-            )
+            Row {
+                Text(
+                    text = "👩‍🍳",
+                    fontSize = 28.sp
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+
+                GradientText(text = "GOBBLE")
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Text(
+                    text = "AI",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            }
+
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Không biết ăn món gì hôm nay? Để tôi gợi ý cho bạn nhé!",
-                fontSize = 14.sp,
+                text = "Not sure what to eat today? Let me suggest something for you!",
+                fontSize = 16.sp,
                 color = Color(0xFFFC5835),
                 textAlign = TextAlign.Center
             )
@@ -102,9 +119,21 @@ fun ChatBoxScreen() {
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(Color(0xFFFC5835)),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
+                enabled = !isLoading
             ) {
-                Text("Create the menu list now", fontSize = 20.sp, color = Color.White, fontWeight = FontWeight.Bold)
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        modifier = Modifier
+                            .size(20.dp)
+                            .padding(end = 8.dp),
+                        strokeWidth = 2.dp
+                    )
+                    Text("Loading...", fontSize = 16.sp, color = Color.White)
+                } else {
+                    Text("Create the menu list now", fontSize = 20.sp, color = Color.White, fontWeight = FontWeight.Bold)
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -175,3 +204,21 @@ fun DropdownMenuBox(options: List<String>, selected: MutableState<String>) {
     }
 }
 
+
+
+
+@Composable
+fun GradientText(text: String, fontSize: TextUnit = 28.sp) {
+    val gradient = Brush.linearGradient(
+        colors = listOf(Color(0xFF0A0F7A), Color(0xFF59AAE1), Color(0xFFEC47BC))
+    )
+
+    Text(
+        text = text,
+        style = TextStyle(
+            fontSize = fontSize,
+            fontWeight = FontWeight.Bold,
+            brush = gradient // Đây là cách áp dụng gradient
+        )
+    )
+}

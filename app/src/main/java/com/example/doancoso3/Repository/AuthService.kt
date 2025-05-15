@@ -12,7 +12,7 @@ open class AuthService {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance() // Lấy instance FirebaseAuth
     private val database = FirebaseDatabase.getInstance().getReference("Users") // Tham chiếu đến nhánh "users" trong Firebase Realtime Database
     // Hàm đăng ký người dùng (sử dụng coroutine)
-    suspend fun register(name: String, email: String, password: String, phone: String, address: String, role: String
+    suspend fun register(name: String, email: String, password: String, address: String, phone: String, role: String
     ): Boolean {
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()

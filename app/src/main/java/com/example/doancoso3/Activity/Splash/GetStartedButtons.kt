@@ -46,7 +46,7 @@ fun GetStartedButton(
                 .height(50.dp)
         ) {
             Text(
-                text = "Sign up",
+                text = "Login",
                 fontSize = 16.sp
             )
         }

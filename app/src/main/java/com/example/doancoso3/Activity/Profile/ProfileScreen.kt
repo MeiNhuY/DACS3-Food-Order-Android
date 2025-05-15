@@ -104,9 +104,9 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = an
         Text("Personal Information", color = Color(0xFF6A6AD3), fontWeight = FontWeight.Bold, fontSize = 16.sp)
         Spacer(modifier = Modifier.height(12.dp))
         ProfileFieldWithIcon(icon = R.drawable.person, label = "Username", value = user.name)
-        ProfileFieldWithIcon(icon = R.drawable.phone, label = "Email", value = user.email)
+        ProfileFieldWithIcon(icon = R.drawable.email, label = "Email", value = user.email)
         ProfileFieldWithIcon(icon = R.drawable.phone, label = "Mobile", value = user.phone)
-        ProfileFieldWithIcon(icon = R.drawable.phone, label = "Address", value = user.address)
+        ProfileFieldWithIcon(icon = R.drawable.address, label = "Address", value = user.address)
 
         Spacer(modifier = Modifier.height(24.dp))
 
